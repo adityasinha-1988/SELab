@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Requirements Analysis Toolkit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .tool-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            color: #2563eb; /* blue-600 */
+            border-bottom-color: #2563eb;
+            font-weight: 600;
+        }
+        .moscow-bucket {
+            min-height: 150px;
+        }
+        .draggable {
+            cursor: grab;
+        }
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Modern Requirements Analysis Toolkit</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">From simple lists to user-centric stories and testable criteria.</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="mb-8 border-b border-gray-200">
+            <nav class="flex flex-wrap -mb-px" id="tabs">
+                <button class="tab-button active text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="user-story">1. User Story Workshop</button>
+                <button class="tab-button text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="moscow">2. MoSCoW Prioritization</button>
+                <button class="tab-button text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="nfr">3. NFR Explorer</button>
+                <button class="tab-button text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="acceptance">4. Acceptance Criteria</button>
+            </nav>
+        </div>
+
+        <main>
+            <!-- User Story Workshop -->
+            <div id="user-story" class="tool-section tab-content">
+                <h2 class="text-2xl font-bold mb-2">1. User Story Workshop</h2>
+                <p class="text-gray-600 mb-6">A user story is a simple, powerful way to describe a requirement from the user's perspective. It forces us to think about *who*, *what*, and *why*.</p>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-6">
+                    <h3 class="font-bold text-blue-800">The Format</h3>
+                    <p class="text-blue-700">As a <span class="font-semibold">[type of user]</span>, I want to <span class="font-semibold">[perform some action]</span>, so that I can <span class="font-semibold">[achieve some goal]</span>.</p>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4">Let's Practice!</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold mb-2">Example:</h4>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <p><span class="font-semibold">As a</span> Student,</p>
+                            <p><span class="font-semibold">I want to</span> search for items using keywords,</p>
+                            <p><span class="font-semibold">so that I can</span> quickly find my lost water bottle.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2">Your Turn (Lost & Found Portal):</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <label for="user-type" class="w-24 font-semibold">As a</label>
+                                <input type="text" id="user-type" placeholder="e.g., Student, Admin" class="flex-1 p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div class="flex items-center">
+                                <label for="user-action" class="w-24 font-semibold">I want to</label>
+                                <input type="text" id="user-action" placeholder="e.g., mark an item as 'Resolved'" class="flex-1 p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div class="flex items-center">
+                                <label for="user-goal" class="w-24 font-semibold">so that</label>
+                                <input type="text" id="user-goal" placeholder="e.g., other users know it's found" class="flex-1 p-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MoSCoW Prioritization -->
+            <div id="moscow" class="tool-section tab-content hidden">
+                <h2 class="text-2xl font-bold mb-2">2. MoSCoW Prioritization Simulator</h2>
+                <p class="text-gray-600 mb-6">You can't build everything at once. The MoSCoW method helps teams decide what's critical for a release. Drag and drop the requirements into the correct buckets.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-red-100 p-4 rounded-lg">
+                        <h3 class="font-bold text-red-800 text-center">M - Must Have</h3>
+                        <p class="text-xs text-center text-red-700 mb-2">Critical for launch. Non-negotiable.</p>
+                        <div class="moscow-bucket bg-red-50 p-2 rounded-md border-2 border-dashed border-red-200" data-bucket="must"></div>
+                    </div>
+                    <div class="bg-yellow-100 p-4 rounded-lg">
+                        <h3 class="font-bold text-yellow-800 text-center">S - Should Have</h3>
+                        <p class="text-xs text-center text-yellow-700 mb-2">Important, but not critical. Can be delayed.</p>
+                        <div class="moscow-bucket bg-yellow-50 p-2 rounded-md border-2 border-dashed border-yellow-200" data-bucket="should"></div>
+                    </div>
+                    <div class="bg-green-100 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-800 text-center">C - Could Have</h3>
+                        <p class="text-xs text-center text-green-700 mb-2">Desirable but not necessary. "Nice to have".</p>
+                        <div class="moscow-bucket bg-green-50 p-2 rounded-md border-2 border-dashed border-green-200" data-bucket="could"></div>
+                    </div>
+                    <div class="bg-gray-200 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-800 text-center">W - Won't Have (This time)</h3>
+                        <p class="text-xs text-center text-gray-700 mb-2">Will not be included in this release.</p>
+                        <div class="moscow-bucket bg-gray-100 p-2 rounded-md border-2 border-dashed border-gray-300" data-bucket="wont"></div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold mb-2">Requirements Pool:</h3>
+                    <div id="requirements-pool" class="flex flex-wrap gap-2 p-4 bg-gray-100 rounded-lg">
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true" data-id="1">User Login</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true" data-id="2">Report a Lost Item</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true" data-id="3">Dark Mode Theme</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true" data-id="4">Password Reset via Email</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true" data-id="5">Admin Dashboard</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true" data-id="6">Integration with Campus Map</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFR Explorer -->
+            <div id="nfr" class="tool-section tab-content hidden">
+                <h2 class="text-2xl font-bold mb-2">3. Non-Functional Requirements (NFR) Explorer</h2>
+                <p class="text-gray-600 mb-6">NFRs define *how well* the system should work. We can use the FURPS+ model to explore them. Think about these questions for our Lost & Found portal.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="font-bold text-lg mb-2">Usability</h3>
+                        <p class="text-gray-600">How easy is it to use? A first-time user should be able to report a lost item in under 2 minutes.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="font-bold text-lg mb-2">Reliability</h3>
+                        <p class="text-gray-600">How often does it fail? The system should be available 99.9% of the time.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="font-bold text-lg mb-2">Performance</h3>
+                        <p class="text-gray-600">How fast is it? Search results should appear in under 2 seconds, even with 1000 items in the database.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="font-bold text-lg mb-2">Supportability</h3>
+                        <p class="text-gray-600">How easy is it to maintain? Code must be well-commented and follow a consistent style guide.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="font-bold text-lg mb-2">Security (+)</h3>
+                        <p class="text-gray-600">How secure is it? User passwords must be hashed and salted, not stored as plain text.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="font-bold text-lg mb-2">Interface (+)</h3>
+                        <p class="text-gray-600">How does it interact with other systems? The app must have an API to allow a future mobile app to connect.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acceptance Criteria -->
+            <div id="acceptance" class="tool-section tab-content hidden">
+                 <h2 class="text-2xl font-bold mb-2">4. Acceptance Criteria Builder</h2>
+                <p class="text-gray-600 mb-6">Acceptance Criteria (AC) make a User Story testable. They define the "Definition of Done". We use the Gherkin syntax (Given-When-Then) for this.</p>
+                
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg mb-6">
+                    <h3 class="font-bold text-green-800">The Format</h3>
+                    <p class="text-green-700"><span class="font-semibold">Given</span> [a context or precondition]</p>
+                    <p class="text-green-700"><span class="font-semibold">When</span> [I perform an action]</p>
+                    <p class="text-green-700"><span class="font-semibold">Then</span> [I should see an expected outcome]</p>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4">Let's Build AC for a User Story</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold mb-2">User Story:</h4>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <p>As a Student, I want to search for items using keywords, so that I can quickly find my lost water bottle.</p>
+                        </div>
+                        <h4 class="font-bold mb-2 mt-4">Example AC:</h4>
+                        <div class="bg-gray-100 p-4 rounded-lg text-sm">
+                            <p><span class="font-semibold text-gray-500">Scenario: Successful Search</span></p>
+                            <p><span class="font-semibold">Given</span> I am on the homepage,</p>
+                            <p><span class="font-semibold">When</span> I type "bottle" into the search bar and press Enter,</p>
+                            <p><span class="font-semibold">Then</span> I should be taken to the search results page and see a list of items containing the word "bottle".</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2">Your Turn (Write AC for the same story):</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <label for="ac-given" class="w-20 font-semibold pt-2">Given</label>
+                                <textarea id="ac-given" placeholder="e.g., I am on the homepage and no items match my search term" class="flex-1 p-2 border border-gray-300 rounded-md" rows="2"></textarea>
+                            </div>
+                            <div class="flex items-start">
+                                <label for="ac-when" class="w-20 font-semibold pt-2">When</label>
+                                <textarea id="ac-when" placeholder="e.g., I type 'xyz' into the search bar and press Enter" class="flex-1 p-2 border border-gray-300 rounded-md" rows="2"></textarea>
+                            </div>
+                            <div class="flex items-start">
+                                <label for="ac-then" class="w-20 font-semibold pt-2">Then</label>
+                                <textarea id="ac-then" placeholder="e.g., I should see a message 'No results found'" class="flex-1 p-2 border border-gray-300 rounded-md" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching logic
+            const tabs = document.getElementById('tabs');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    tabs.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+
+                    contents.forEach(content => content.classList.add('hidden'));
+                    const targetId = e.target.getAttribute('data-target');
+                    document.getElementById(targetId).classList.remove('hidden');
+                }
+            });
+
+            // Drag and drop logic for MoSCoW
+            const draggables = document.querySelectorAll('.draggable');
+            const buckets = document.querySelectorAll('.moscow-bucket');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+
+            buckets.forEach(bucket => {
+                bucket.addEventListener('dragover', e => {
+                    e.preventDefault();
+                });
+
+                bucket.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const draggable = document.querySelector('.dragging');
+                    if (draggable) {
+                        bucket.appendChild(draggable);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
