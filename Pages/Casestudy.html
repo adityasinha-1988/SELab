@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Requirement Analysis Case Study</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Academic Blue & Slate -->
+    <!-- Application Structure Plan: A thematic, single-page application with a top navigation bar to allow users to jump between the logical steps of a requirements analysis process. This structure is more user-friendly than a long scroll. The core of the application is an interactive MoSCoW prioritization tool, which transforms a static list into an engaging drag-and-drop exercise. This hands-on approach is chosen to enhance learning and retention of the prioritization concept. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Project Vision. Goal: Inform. Viz: Highlighted blockquote. Interaction: Static. Justification: Clearly presents the core concept. Library: HTML/Tailwind.
+        - Report Info: User Story Backlog. Goal: Organize. Viz: HTML table. Interaction: Static. Justification: Best format for tabular data. Library: HTML/Tailwind.
+        - Report Info: MoSCoW Prioritization. Goal: Organize/Engage. Viz: Interactive drag-and-drop board. Interaction: Drag cards to buckets. Justification: Turns a passive reading task into an active learning exercise, which is more effective for understanding prioritization. Library: Vanilla JS.
+        - Report Info: NFRs. Goal: Inform. Viz: Grid of styled cards. Interaction: Static. Justification: More visually appealing and scannable than a bulleted list. Library: HTML/Tailwind.
+        - Report Info: Sprint 1 Prep. Goal: Inform. Viz: Clearly formatted text blocks. Interaction: Static. Justification: Separates the user story from its acceptance criteria for clarity. Library: HTML/Tailwind.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .tool-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            color: #2563eb; /* blue-600 */
+            border-bottom-color: #2563eb;
+            font-weight: 600;
+        }
+        .moscow-bucket {
+            min-height: 150px;
+        }
+        .draggable {
+            cursor: grab;
+        }
+        .dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Requirement Analysis Case Study</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">An interactive walkthrough of the requirements analysis process for the "Campus Event Planner App".</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="mb-8 border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-10">
+            <nav class="flex flex-wrap -mb-px max-w-5xl mx-auto" id="tabs">
+                <button class="nav-link active text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="vision">1. Vision</button>
+                <button class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="backlog">2. Backlog</button>
+                <button class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="moscow">3. Prioritization</button>
+                <button class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="nfr">4. NFRs</button>
+                <button class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="sprint1">5. Sprint 1 Prep</button>
+                <button class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-6 border-b-2 font-medium text-sm" data-target="summary">6. Summary</button>
+            </nav>
+        </div>
+
+        <main class="max-w-5xl mx-auto">
+            <!-- Project Vision -->
+            <div id="vision" class="tool-section content-section">
+                <h2 class="text-2xl font-bold mb-4">1. Project Vision & Concept</h2>
+                <p class="text-gray-600 mb-6">The first step is to define what we are building and for whom. This statement guides the entire project.</p>
+                <blockquote class="bg-gray-50 border-l-4 border-gray-500 p-6 rounded-r-lg">
+                    <p class="text-lg italic text-gray-700">The **Campus Event Planner** is a mobile-first web application for university students to discover, register for, and manage their attendance at campus events. The platform aims to solve the problem of low event awareness and scattered information by creating a single, centralized hub for all official club, department, and university-wide events, thereby increasing student engagement and participation.</p>
+                </blockquote>
+            </div>
+
+            <!-- User Story Backlog -->
+            <div id="backlog" class="tool-section content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">2. User Story Brainstorming & Product Backlog</h2>
+                <p class="text-gray-600 mb-6">Next, we brainstorm all potential features and convert them into the user story format. This becomes our initial Product Backlog.</p>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border">
+                        <thead class="bg-gray-800 text-white">
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Brainstormed Idea</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">User Story</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <tr class="border-b"><td class="py-3 px-4">Login</td><td class="py-3 px-4">As a student, I want to log in with my university credentials, so that I can access personalized features.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="py-3 px-4">See Events</td><td class="py-3 px-4">As a user, I want to see a list of all upcoming events, so that I can find out what's happening on campus.</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4">Event Details</td><td class="py-3 px-4">As a user, I want to click on an event to see its details (date, time, location, description), so that I can decide if I want to attend.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="py-3 px-4">Register for Event</td><td class="py-3 px-4">As a student, I want to click an "RSVP" button, so that I can register for an event.</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4">My Events</td><td class="py-3 px-4">As a student, I want to see a list of events I have registered for, so that I can keep track of my schedule.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="py-3 px-4">Admin Post Event</td><td class="py-3 px-4">As an event organizer, I want to create and post a new event, so that students can see it.</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4">Search</td><td class="py-3 px-4">As a user, I want to search for events by name, so that I can find a specific event quickly.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="py-3 px-4">Filter by Category</td><td class="py-3 px-4">As a user, I want to filter events by category (e.g., "Workshop", "Sports", "Music"), so that I can find events that match my interests.</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4">Get Notifications</td><td class="py-3 px-4">As a student, I want to receive a notification a day before an event I've registered for, so that I don't forget to attend.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="py-3 px-4">Admin Dashboard</td><td class="py-3 px-4">As an event organizer, I want to see how many students have registered for my event, so that I can plan accordingly.</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4">User Profile</td><td class="py-3 px-4">As a student, I want to have a simple profile with my name and email.</td></tr>
+                            <tr class="bg-gray-50"><td class="py-3 px-4">Event Calendar View</td><td class="py-3 px-4">As a user, I want to view events on a calendar, so that I can see how they fit into my monthly schedule.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MoSCoW Prioritization -->
+            <div id="moscow" class="tool-section content-section hidden">
+                <h2 class="text-2xl font-bold mb-2">3. MoSCoW Prioritization Simulator</h2>
+                <p class="text-gray-600 mb-6">You can't build everything at once. The MoSCoW method helps teams decide what's critical. Drag and drop the user stories into the correct buckets to practice prioritization.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-red-100 p-4 rounded-lg"><h3 class="font-bold text-red-800 text-center">M - Must Have</h3><p class="text-xs text-center text-red-700 mb-2">Critical for launch.</p><div class="moscow-bucket bg-red-50 p-2 rounded-md border-2 border-dashed border-red-200" data-bucket="must"></div></div>
+                    <div class="bg-yellow-100 p-4 rounded-lg"><h3 class="font-bold text-yellow-800 text-center">S - Should Have</h3><p class="text-xs text-center text-yellow-700 mb-2">Important, but not critical.</p><div class="moscow-bucket bg-yellow-50 p-2 rounded-md border-2 border-dashed border-yellow-200" data-bucket="should"></div></div>
+                    <div class="bg-green-100 p-4 rounded-lg"><h3 class="font-bold text-green-800 text-center">C - Could Have</h3><p class="text-xs text-center text-green-700 mb-2">Desirable "nice to have".</p><div class="moscow-bucket bg-green-50 p-2 rounded-md border-2 border-dashed border-green-200" data-bucket="could"></div></div>
+                    <div class="bg-gray-200 p-4 rounded-lg"><h3 class="font-bold text-gray-800 text-center">W - Won't Have</h3><p class="text-xs text-center text-gray-700 mb-2">Not in this release.</p><div class="moscow-bucket bg-gray-100 p-2 rounded-md border-2 border-dashed border-gray-300" data-bucket="wont"></div></div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold mb-2">User Story Pool:</h3>
+                    <div id="requirements-pool" class="flex flex-wrap gap-2 p-4 bg-gray-100 rounded-lg border">
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">User Login</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">See a list of all upcoming events</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">View event details</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Admin can post a new event</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Register for an event (RSVP)</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">See a list of "My Events"</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Search for events</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Admin can see RSVP count</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Filter events by category</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Receive email notifications</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">User Profile</div>
+                        <div class="draggable bg-white p-2 rounded-md shadow-sm border" draggable="true">Event Calendar View</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFRs -->
+            <div id="nfr" class="tool-section content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">4. Non-Functional Requirements (NFRs) Exploration</h2>
+                <p class="text-gray-600 mb-6">We also need to consider *how well* the system should work. These are just as important as the features themselves.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border"><h3 class="font-bold text-lg mb-2">Performance</h3><p class="text-gray-600">The list of events must load in under 3 seconds on the campus Wi-Fi.</p></div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border"><h3 class="font-bold text-lg mb-2">Usability</h3><p class="text-gray-600">A new user should be able to find and view the details of an event in 3 clicks or less.</p></div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border"><h3 class="font-bold text-lg mb-2">Security</h3><p class="text-gray-600">All user passwords must be securely hashed and salted.</p></div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border"><h3 class="font-bold text-lg mb-2">Reliability</h3><p class="text-gray-600">The system should be available 99.5% of the time.</p></div>
+                </div>
+            </div>
+            
+            <!-- Sprint 1 Prep -->
+            <div id="sprint1" class="tool-section content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">5. Preparing for Sprint 1: Detailing a User Story</h2>
+                <p class="text-gray-600 mb-6">Now, we take a high-priority "Must Have" story and add **Acceptance Criteria** to make it ready for development. This defines the "Definition of Done".</p>
+                <div class="bg-gray-50 p-6 rounded-lg border">
+                    <h3 class="font-semibold text-lg mb-2">User Story:</h3>
+                    <blockquote class="border-l-4 border-gray-400 pl-4 italic mb-6">As a user, I want to see a list of all upcoming events, so that I can find out what's happening on campus.</blockquote>
+                    
+                    <h3 class="font-semibold text-lg mb-2">Acceptance Criteria:</h3>
+                    <div class="space-y-4 text-sm">
+                        <div class="bg-white p-4 rounded-md border"><p class="font-semibold text-gray-500">Scenario 1: Viewing the event list</p><p><span class="font-bold">Given</span> I am on the homepage, <span class="font-bold">When</span> the page loads, <span class="font-bold">Then</span> I should see a section titled "Upcoming Events".</p></div>
+                        <div class="bg-white p-4 rounded-md border"><p class="font-semibold text-gray-500">Scenario 2: Event list displays correct information</p><p><span class="font-bold">Given</span> I am viewing the "Upcoming Events" section, <span class="font-bold">When</span> I look at an event in the list, <span class="font-bold">Then</span> I should see the event's name, date, and time.</p></div>
+                        <div class="bg-white p-4 rounded-md border"><p class="font-semibold text-gray-500">Scenario 3: Events are in chronological order</p><p><span class="font-bold">Given</span> I am viewing the "Upcoming Events" section, <span class="font-bold">When</span> I look at the list, <span class="font-bold">Then</span> the events should be sorted with the soonest event at the top.</p></div>
+                        <div class="bg-white p-4 rounded-md border"><p class="font-semibold text-gray-500">Scenario 4: No upcoming events</p><p><span class="font-bold">Given</span> I am on the homepage, <span class="font-bold">And</span> there are no events scheduled in the future, <span class="font-bold">When</span> the page loads, <span class="font-bold">Then</span> I should see a message that says "No upcoming events at this time."</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary of Requirements -->
+            <div id="summary" class="tool-section content-section hidden">
+                <h2 class="text-2xl font-bold mb-4">6. Summary of Final Requirements</h2>
+                <p class="text-gray-600 mb-6">This section consolidates all the analysis into a clear, final list of requirements for the first version of the Campus Event Planner App.</p>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800 border-b pb-2">Functional Requirements (Product Backlog)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><strong>User Management:</strong> Students must be able to log in with their university credentials.</li>
+                            <li><strong>Event Discovery:</strong> Users need to see a list of all upcoming events and view the details for each event (date, time, location, etc.).</li>
+                            <li><strong>Event Registration:</strong> Students should be able to RSVP for events they want to attend and see a list of their registered events.</li>
+                            <li><strong>Admin Functions:</strong> Event organizers must be able to create and post new events and see how many students have registered.</li>
+                            <li><strong>Search & Filter:</strong> Users should be able to search for events by name and filter them by category.</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800 border-b pb-2">Prioritized Requirements (for the first release)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold">Must-Have:</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li>User Login</li>
+                                    <li>See a list of all upcoming events</li>
+                                    <li>View event details</li>
+                                    <li>Admin can post a new event</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Should-Have:</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li>RSVP for an event</li>
+                                    <li>See "My Events"</li>
+                                    <li>Search for events</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Could-Have:</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li>Filter by category</li>
+                                    <li>Email notifications</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Won't-Have (for now):</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li>A calendar view of events</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800 border-b pb-2">Non-Functional Requirements</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><strong>Performance:</strong> The event list must load in under 3 seconds on campus Wi-Fi.</li>
+                            <li><strong>Usability:</strong> A new user must be able to find and view an event in 3 clicks or less.</li>
+                            <li><strong>Security:</strong> User passwords must be stored securely (hashed and salted).</li>
+                            <li><strong>Reliability:</strong> The system must be available 99.5% of the time.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching logic
+            const tabs = document.getElementById('tabs');
+            const contents = document.querySelectorAll('.content-section');
+            tabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('nav-link')) {
+                    tabs.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+
+                    contents.forEach(content => content.classList.add('hidden'));
+                    const targetId = e.target.getAttribute('data-target');
+                    document.getElementById(targetId).classList.remove('hidden');
+                }
+            });
+
+            // Drag and drop logic for MoSCoW
+            const draggables = document.querySelectorAll('.draggable');
+            const buckets = document.querySelectorAll('.moscow-bucket');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+
+            buckets.forEach(bucket => {
+                bucket.addEventListener('dragover', e => {
+                    e.preventDefault();
+                });
+
+                bucket.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const draggable = document.querySelector('.dragging');
+                    if (draggable) {
+                        bucket.appendChild(draggable);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

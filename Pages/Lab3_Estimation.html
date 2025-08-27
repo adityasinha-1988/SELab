@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Estimation Calculator</title>
+    
+    <!-- CSS Code -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+        :root {
+            --primary-color: #5e72e4;
+            --secondary-color: #8965e0;
+            --tertiary-color: #2dce89;
+            --danger-color: #f5365c;
+            --background-color: #f6f9fc;
+            --card-background: #ffffff;
+            --text-color: #525f7f;
+            --heading-color: #32325d;
+            --light-gray: #dee2e6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        header { text-align: center; margin-bottom: 2rem; }
+        header h1 { color: var(--heading-color); font-weight: 700; }
+        header p { color: #8898aa; }
+        
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .tab-nav button {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-color);
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .tab-nav button::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .tab-nav button.active {
+            color: var(--primary-color);
+        }
+        .tab-nav button.active::after {
+            transform: scaleX(1);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .input-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .sticky-column {
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-card, .results-card, .breakdown-card, .case-study-card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        h3 {
+            color: var(--heading-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f1f1;
+            padding-bottom: 0.75rem;
+        }
+        
+        .model-selection {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .model-selection label {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .model-selection input[type="radio"] {
+            display: none;
+        }
+        .model-selection input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        #cost-drivers-card {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        #cost-drivers-card.hidden {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        .slider-group { margin-bottom: 1.5rem; }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .slider-label span:first-child { font-weight: 500; }
+        .slider-label .rating-text, .slider-label .slider-value {
+            font-weight: 600;
+            color: var(--secondary-color);
+            background: #f6f9fc;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .results-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        .results-card.loc-theme {
+             background: linear-gradient(135deg, var(--tertiary-color), #2dcecc);
+        }
+        .results-card h3 { color: white; border-bottom-color: rgba(255,255,255,0.3); }
+        .result-item { margin-top: 1.5rem; }
+        .result-item .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        .result-item .label { font-size: 1rem; opacity: 0.8; }
+        
+        .breakdown-card {
+            background: #f6f9fc;
+        }
+        .breakdown-card h3 { color: var(--heading-color); }
+        .breakdown-card p {
+            font-family: 'Roboto Mono', monospace;
+            background: #fff;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+        }
+        .breakdown-card .formula-title {
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 1rem;
+        }
+
+        /* Case Study Styles */
+        .case-study-card h4 {
+            font-weight: 600;
+            color: var(--heading-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .case-study-card p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        .case-study-card .justification {
+            background: #f6f9fc;
+            border-left: 3px solid var(--secondary-color);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        
+        /* Module Estimator Styles */
+        #add-module-form { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        #module-name-input { flex-grow: 1; }
+        #add-module-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .module-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f6f9fc;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .module-name { font-weight: 600; width: 150px; }
+        .module-slider { flex-grow: 1; }
+        .module-loc { font-weight: 600; color: var(--secondary-color); width: 80px; text-align: right; }
+        .module-remove-btn {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .total-loc-display {
+            text-align: right;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--heading-color);
+            margin-top: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+            padding-top: 1rem;
+        }
+        .total-loc-display span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        #use-total-loc-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #2dce89, #2dcecc);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #use-total-loc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(45, 206, 137, 0.4);
+        }
+        #load-case-study-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #2dce89, #2dcecc);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #load-case-study-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(45, 206, 137, 0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sticky-column { position: static; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced Estimation Calculator 🚀</h1>
+            <p>Select a model and use the sliders to see how each factor affects the project estimate.</p>
+        </header>
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="module-estimator">Module Estimator</button>
+            <button class="tab-btn" data-tab="cocomo">COCOMO</button>
+            <button class="tab-btn" data-tab="loc-estimation">LOC Estimation</button>
+            <button class="tab-btn" data-tab="case-study">Case Study</button>
+        </nav>
+
+        <div id="module-estimator" class="tab-content active">
+            <div class="input-card">
+                <h3>Estimate LOC by Modules</h3>
+                <p style="margin-bottom: 1.5rem;">Break down your project into smaller modules and estimate the Lines of Code (LOC) for each. This bottom-up approach provides a more accurate total LOC for your calculators.</p>
+                <form id="add-module-form">
+                    <input type="text" id="module-name-input" placeholder="Enter Module Name (e.g., User Login)" required>
+                    <button type="submit" id="add-module-btn">Add Module</button>
+                </form>
+                <div id="module-list">
+                    <!-- Modules will be added here dynamically -->
+                </div>
+                <div class="total-loc-display">
+                    <span>Total Estimated Lines of Code:</span>
+                    <div id="total-loc-result">0</div>
+                </div>
+                <button id="use-total-loc-btn">Use this LOC in Calculators</button>
+            </div>
+        </div>
+
+        <div id="cocomo" class="tab-content">
+            <div class="main-layout">
+                <div class="input-column">
+                    <div class="input-card">
+                        <h3>1. Select Model</h3>
+                        <div class="model-selection">
+                            <input type="radio" id="model-basic" name="cocomo_model" value="basic" class="realtime-input">
+                            <label for="model-basic">Basic</label>
+                            
+                            <input type="radio" id="model-intermediate" name="cocomo_model" value="intermediate" class="realtime-input" checked>
+                            <label for="model-intermediate">Intermediate</label>
+                        </div>
+                    </div>
+                    <div class="input-card">
+                        <h3>2. Project Basics</h3>
+                        <div>
+                            <label for="kloc">Project Size (KLOC):</label>
+                            <input type="number" id="kloc" placeholder="e.g., 30" value="30" class="realtime-input">
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <label for="mode">Project Mode:</label>
+                            <select id="mode" class="realtime-input">
+                                <option value="organic">Organic</option>
+                                <option value="semi-detached" selected>Semi-detached</option>
+                                <option value="embedded">Embedded</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-card" id="cost-drivers-card">
+                        <h3>3. Cost Drivers (Intermediate Only)</h3>
+                        <div id="sliders-container"></div>
+                    </div>
+                </div>
+                <div class="sticky-column">
+                    <div class="results-card">
+                        <h3>Live Estimate</h3>
+                        <div class="result-item">
+                            <div id="effort-result" class="value">0.00</div>
+                            <div class="label">Effort (Person-Months)</div>
+                        </div>
+                        <div class="result-item">
+                            <div id="tdev-result" class="value">0.00</div>
+                            <div class="label">Development Time (Months)</div>
+                        </div>
+                    </div>
+                    <div class="breakdown-card">
+                        <h3>Calculation Breakdown</h3>
+                        <div id="eaf-section">
+                            <div class="formula-title">1. EAF:</div>
+                            <p><span id="eaf-breakdown">...</span> = <strong id="eaf-result">1.00</strong></p>
+                        </div>
+                        <div class="formula-title">Effort:</div>
+                        <p id="effort-formula-breakdown">... = <strong id="effort-calc-result">0.00</strong></p>
+                        <div class="formula-title">Time:</div>
+                        <p id="tdev-formula-breakdown">... = <strong id="tdev-calc-result">0.00</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loc-estimation" class="tab-content">
+             <div class="main-layout">
+                <div class="input-column">
+                    <div class="input-card">
+                        <h3>Direct Estimation Inputs</h3>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Total Lines of Code (LOC)</span>
+                                <span class="slider-value" id="loc-value">50000</span>
+                            </div>
+                            <input type="range" id="loc-slider" class="loc-input" min="1000" max="200000" value="50000" step="1000">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Productivity (LOC per Person-Month)</span>
+                                <span class="slider-value" id="prod-value">500</span>
+                            </div>
+                            <input type="range" id="prod-slider" class="loc-input" min="100" max="2000" value="500" step="50">
+                        </div>
+                        
+                        <h3>Cost Unit</h3>
+                        <div class="model-selection">
+                           <input type="radio" id="cost-unit-currency" name="cost_unit" value="currency" class="loc-input" checked>
+                           <label for="cost-unit-currency">Currency (INR)</label>
+                           <input type="radio" id="cost-unit-time" name="cost_unit" value="time" class="loc-input">
+                           <label for="cost-unit-time">Time (Person-Hours)</label>
+                        </div>
+
+                        <div id="salary-input-group" class="slider-group">
+                            <div class="slider-label">
+                                <span>Avg. Salary per Month (INR)</span>
+                                <span class="slider-value" id="salary-value">50000</span>
+                            </div>
+                            <input type="range" id="salary-slider" class="loc-input" min="10000" max="200000" value="50000" step="5000">
+                        </div>
+                        <div id="time-input-group" class="slider-group hidden">
+                            <div class="slider-label">
+                                <span>Working Hours per Day</span>
+                                <span class="slider-value" id="hours-value">8</span>
+                            </div>
+                            <input type="range" id="hours-slider" class="loc-input" min="1" max="12" value="8" step="1">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Desired Team Size</span>
+                                <span class="slider-value" id="team-value">4</span>
+                            </div>
+                            <input type="range" id="team-slider" class="loc-input" min="1" max="20" value="4" step="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="sticky-column">
+                    <div class="results-card loc-theme">
+                        <h3>Live Estimate</h3>
+                        <div class="result-item">
+                            <div id="loc-effort-result" class="value">0.00</div>
+                            <div class="label">Effort (Person-Months)</div>
+                        </div>
+                        <div class="result-item">
+                            <div id="loc-cost-result" class="value">0</div>
+                            <div class="label"><span id="loc-cost-unit-label">Total Cost (INR)</span></div>
+                        </div>
+                        <div class="result-item">
+                            <div id="loc-time-result" class="value">0.00</div>
+                            <div class="label">Development Time (Months)</div>
+                        </div>
+                    </div>
+                    <div class="breakdown-card">
+                        <h3>Calculation Breakdown</h3>
+                        <div class="formula-title">Effort:</div>
+                        <p id="loc-effort-breakdown">... = 0.00</p>
+                        <div class="formula-title" id="loc-cost-title">Cost:</div>
+                        <p id="loc-cost-breakdown">... = 0</p>
+                        <div class="formula-title">Time (Duration):</div>
+                        <p id="loc-time-breakdown">... = 0.00</p>
+                        <hr style="margin: 1.5rem 0;">
+                        <div class="formula-title">Productivity Check:</div>
+                        <p id="loc-prod-check-breakdown">... = 0</p>
+                        <div class="formula-title">Team Size Check:</div>
+                        <p id="loc-team-check-breakdown">... = 0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="case-study" class="tab-content">
+            <div class="case-study-card">
+                <h3>Case Study: Campus Event Planner App</h3>
+                <p>This is a reference example to help you select parameters for your own project. We will estimate the effort for a "Campus Event Planner" web app, a typical semester project for students.</p>
+                <h4>Project Size (KLOC) = 10</h4>
+                <p class="justification">A web app with features like user login, event lists, details, RSVP, and a simple admin panel is moderately complex. A reasonable estimate for a student team is around 10,000 lines of code (10 KLOC).</p>
+                <h4>Project Mode = Semi-detached</h4>
+                <p class="justification">The project is not a simple "hello world" (Organic) nor is it a life-critical system (Embedded). It involves a database and user roles, making it a good fit for Semi-detached.</p>
+                <h4>Cost Driver Justifications:</h4>
+                <ul>
+                    <li><strong>RELY = Nominal (1.00):</strong> Not life-critical.</li>
+                    <li><strong>DATA = Nominal (1.00):</strong> Standard database size.</li>
+                    <li><strong>CPLX = High (1.15):</strong> Involves frontend, backend, DB, and auth.</li>
+                    <li><strong>TIME = Nominal (1.00):</strong> No strict real-time constraints.</li>
+                    <li><strong>STOR = Nominal (1.00):</strong> Standard server storage is fine.</li>
+                    <li><strong>VIRT = Nominal (1.00):</strong> Stable dev environment (Node.js, etc.).</li>
+                    <li><strong>TURN = Low (0.87):</strong> Students can take time to fix bugs.</li>
+                    <li><strong>ACAP = Nominal (1.00):</strong> Average analysis skills assumed.</li>
+                    <li><strong>AEXP = Low (1.13):</strong> Team is likely new to this specific app type.</li>
+                    <li><strong>PCAP = Nominal (1.00):</strong> Average programming skills assumed.</li>
+                    <li><strong>VEXP = Low (1.10):</strong> Students may be new to the cloud environment.</li>
+                    <li><strong>LEXP = Nominal (1.00):</strong> Basic language experience assumed.</li>
+                    <li><strong>MODP = High (0.91):</strong> Use of Git and frameworks is expected.</li>
+                    <li><strong>TOOL = High (0.91):</strong> Use of powerful free tools like VS Code.</li>
+                    <li><strong>SCED = Nominal (1.00):</strong> A fixed semester deadline is a typical pressure.</li>
+                </ul>
+                <button id="load-case-study-btn">Load Example in COCOMO Calculator</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Code -->
+    <script>
+        // --- COMMON ELEMENTS ---
+        const slidersContainer = document.getElementById('sliders-container');
+        const costDrivers = {
+            rely: { label: 'RELY', values: [0.75, 0.88, 1.00, 1.15, 1.40], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 },
+            data: { label: 'DATA', values: [0.94, 1.00, 1.08, 1.16], texts: ['Low', 'Nominal', 'High', 'V. High'], default: 1 },
+            cplx: { label: 'CPLX', values: [0.70, 0.85, 1.00, 1.15, 1.30, 1.65], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High', 'E. High'], default: 2 },
+            time: { label: 'TIME', values: [1.00, 1.11, 1.30, 1.66], texts: ['Nominal', 'High', 'V. High', 'E. High'], default: 0 },
+            stor: { label: 'STOR', values: [1.00, 1.06, 1.21, 1.56], texts: ['Nominal', 'High', 'V. High', 'E. High'], default: 0 },
+            virt: { label: 'VIRT', values: [0.87, 1.00, 1.15, 1.30], texts: ['Low', 'Nominal', 'High', 'V. High'], default: 1 },
+            turn: { label: 'TURN', values: [0.87, 1.00, 1.07, 1.15], texts: ['Low', 'Nominal', 'High', 'V. High'], default: 1 },
+            acap: { label: 'ACAP', values: [1.46, 1.19, 1.00, 0.86, 0.71], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 },
+            aexp: { label: 'AEXP', values: [1.29, 1.13, 1.00, 0.91, 0.82], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 },
+            pcap: { label: 'PCAP', values: [1.42, 1.17, 1.00, 0.86, 0.70], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 },
+            vexp: { label: 'VEXP', values: [1.21, 1.10, 1.00, 0.90], texts: ['V. Low', 'Low', 'Nominal', 'High'], default: 2 },
+            lexp: { label: 'LEXP', values: [1.14, 1.07, 1.00, 0.95], texts: ['V. Low', 'Low', 'Nominal', 'High'], default: 2 },
+            modp: { label: 'MODP', values: [1.24, 1.10, 1.00, 0.91, 0.82], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 },
+            tool: { label: 'TOOL', values: [1.24, 1.10, 1.00, 0.91, 0.83], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 },
+            sced: { label: 'SCED', values: [1.23, 1.08, 1.00, 1.04, 1.10], texts: ['V. Low', 'Low', 'Nominal', 'High', 'V. High'], default: 2 }
+        };
+
+        // --- COCOMO CALCULATION ---
+        const cocomoConstants = {
+            basic: {
+                organic: { a: 2.4, b: 1.05, c: 2.5, d: 0.38 },
+                'semi-detached': { a: 3.0, b: 1.12, c: 2.5, d: 0.35 },
+                embedded: { a: 3.6, b: 1.20, c: 2.5, d: 0.32 }
+            },
+            intermediate: {
+                organic: { a: 3.2, b: 1.05, c: 2.5, d: 0.38 },
+                'semi-detached': { a: 3.0, b: 1.12, c: 2.5, d: 0.35 },
+                embedded: { a: 2.8, b: 1.20, c: 2.5, d: 0.32 }
+            }
+        };
+
+        function updateCocomoCalculation() {
+            const selectedModel = document.querySelector('input[name="cocomo_model"]:checked').value;
+            const kloc = parseFloat(document.getElementById('kloc').value) || 0;
+            const projectMode = document.getElementById('mode').value;
+            const costDriversCard = document.getElementById('cost-drivers-card');
+            const eafSection = document.getElementById('eaf-section');
+            let eaf = 1;
+            let eafBreakdownString = [];
+
+            if (selectedModel === 'intermediate') {
+                costDriversCard.classList.remove('hidden');
+                eafSection.style.display = 'block';
+                for (const id in costDrivers) {
+                    const slider = document.getElementById(id);
+                    const driverData = costDrivers[id];
+                    const sliderIndex = parseInt(slider.value);
+                    const currentValue = driverData.values[sliderIndex];
+                    document.getElementById(`${id}-text`).textContent = driverData.texts[sliderIndex];
+                    eaf *= currentValue;
+                    eafBreakdownString.push(currentValue.toFixed(2));
+                }
+            } else {
+                costDriversCard.classList.add('hidden');
+                eafSection.style.display = 'none';
+            }
+
+            const constants = cocomoConstants[selectedModel][projectMode];
+            const effort = constants.a * Math.pow(kloc, constants.b) * eaf;
+            const tdev = constants.c * Math.pow(effort, constants.d);
+            
+            document.getElementById('effort-result').textContent = effort.toFixed(2);
+            document.getElementById('tdev-result').textContent = tdev.toFixed(2);
+
+            const effortFormulaEl = document.getElementById('effort-formula-breakdown');
+            const tdevFormulaEl = document.getElementById('tdev-formula-breakdown');
+
+            if (selectedModel === 'intermediate') {
+                document.getElementById('eaf-breakdown').textContent = eafBreakdownString.join(' x ');
+                document.getElementById('eaf-result').textContent = eaf.toFixed(4);
+                effortFormulaEl.innerHTML = `<b>${constants.a}</b> * (<b>${kloc}</b>)^<b>${constants.b}</b> * <b>${eaf.toFixed(4)}</b> = <strong>${effort.toFixed(2)}</strong>`;
+            } else {
+                effortFormulaEl.innerHTML = `<b>${constants.a}</b> * (<b>${kloc}</b>)^<b>${constants.b}</b> = <strong>${effort.toFixed(2)}</strong>`;
+            }
+            tdevFormulaEl.innerHTML = `<b>${constants.c}</b> * (<b>${effort.toFixed(2)}</b>)^<b>${constants.d}</b> = <strong>${tdev.toFixed(2)}</strong>`;
+        }
+        
+        // --- LOC-BASED CALCULATION ---
+        function updateLOCCalculation() {
+            const costUnit = document.querySelector('input[name="cost_unit"]:checked').value;
+            const salaryInputGroup = document.getElementById('salary-input-group');
+            const timeInputGroup = document.getElementById('time-input-group');
+            const locCostUnitLabel = document.getElementById('loc-cost-unit-label');
+            const locCostTitle = document.getElementById('loc-cost-title');
+
+            const loc = parseFloat(document.getElementById('loc-slider').value);
+            const prod = parseFloat(document.getElementById('prod-slider').value);
+            const teamSize = parseFloat(document.getElementById('team-slider').value);
+
+            document.getElementById('loc-value').textContent = loc.toLocaleString();
+            document.getElementById('prod-value').textContent = prod.toLocaleString();
+            document.getElementById('team-value').textContent = teamSize;
+
+            const effort = prod > 0 ? loc / prod : 0;
+            const time = teamSize > 0 ? effort / teamSize : 0;
+            
+            let cost = 0;
+
+            if (costUnit === 'currency') {
+                salaryInputGroup.classList.remove('hidden');
+                timeInputGroup.classList.add('hidden');
+                locCostUnitLabel.textContent = 'Total Cost (INR)';
+                locCostTitle.textContent = 'Cost:';
+
+                const salary = parseFloat(document.getElementById('salary-slider').value);
+                document.getElementById('salary-value').textContent = salary.toLocaleString();
+                cost = effort * salary;
+                document.getElementById('loc-cost-breakdown').innerHTML = `<b>${effort.toFixed(2)}</b> Effort * <b>${salary.toLocaleString()}</b> Salary = <strong>${Math.round(cost).toLocaleString()}</strong>`;
+
+            } else { // time
+                salaryInputGroup.classList.add('hidden');
+                timeInputGroup.classList.remove('hidden');
+                locCostUnitLabel.textContent = 'Total Cost (Person-Hours)';
+                locCostTitle.textContent = 'Cost (in Hours):';
+
+                const hoursPerDay = parseFloat(document.getElementById('hours-slider').value);
+                document.getElementById('hours-value').textContent = hoursPerDay;
+                const workingDaysPerMonth = 22; // Assumption
+                cost = effort * hoursPerDay * workingDaysPerMonth;
+                document.getElementById('loc-cost-breakdown').innerHTML = `<b>${effort.toFixed(2)}</b> Effort * <b>${hoursPerDay}</b> H/Day * <b>${workingDaysPerMonth}</b> D/Month = <strong>${Math.round(cost).toLocaleString()}</strong>`;
+            }
+            
+            const productivityCheck = effort > 0 ? loc / effort : 0;
+            const teamSizeCheck = time > 0 ? effort / time : 0;
+
+            document.getElementById('loc-effort-result').textContent = effort.toFixed(2);
+            document.getElementById('loc-cost-result').textContent = Math.round(cost).toLocaleString();
+            document.getElementById('loc-time-result').textContent = time.toFixed(2);
+            
+            document.getElementById('loc-effort-breakdown').innerHTML = `<b>${loc.toLocaleString()}</b> LOC / <b>${prod.toLocaleString()}</b> Prod = <strong>${effort.toFixed(2)}</strong>`;
+            document.getElementById('loc-time-breakdown').innerHTML = `<b>${effort.toFixed(2)}</b> Effort / <b>${teamSize}</b> People = <strong>${time.toFixed(2)}</strong>`;
+            
+            document.getElementById('loc-prod-check-breakdown').innerHTML = `<b>${loc.toLocaleString()}</b> LOC / <b>${effort.toFixed(2)}</b> Effort = <strong>${Math.round(productivityCheck).toLocaleString()}</strong>`;
+            document.getElementById('loc-team-check-breakdown').innerHTML = `<b>${effort.toFixed(2)}</b> Effort / <b>${time.toFixed(2)}</b> Months = <strong>${Math.round(teamSizeCheck)}</strong>`;
+        }
+
+        // --- MODULE ESTIMATOR ---
+        let modules = [];
+        const addModuleForm = document.getElementById('add-module-form');
+        const moduleNameInput = document.getElementById('module-name-input');
+        const moduleListDiv = document.getElementById('module-list');
+        const totalLOCResult = document.getElementById('total-loc-result');
+
+        function renderModules() {
+            moduleListDiv.innerHTML = '';
+            let totalLOC = 0;
+            modules.forEach(module => {
+                totalLOC += module.loc;
+                const moduleEl = document.createElement('div');
+                moduleEl.className = 'module-item';
+                moduleEl.innerHTML = `
+                    <div class="module-name">${module.name}</div>
+                    <div class="module-slider">
+                        <input type="range" min="100" max="10000" value="${module.loc}" step="100" data-id="${module.id}" class="module-loc-slider">
+                    </div>
+                    <div class="module-loc">${module.loc.toLocaleString()} LOC</div>
+                    <button class="module-remove-btn" data-id="${module.id}">&times;</button>
+                `;
+                moduleListDiv.appendChild(moduleEl);
+            });
+            totalLOCResult.textContent = totalLOC.toLocaleString();
+
+            // Add event listeners to new elements
+            document.querySelectorAll('.module-loc-slider').forEach(slider => {
+                slider.addEventListener('input', (e) => {
+                    const moduleId = parseInt(e.target.dataset.id);
+                    const newLOC = parseInt(e.target.value);
+                    const module = modules.find(m => m.id === moduleId);
+                    if (module) {
+                        module.loc = newLOC;
+                    }
+                    renderModules(); // Re-render to update values
+                });
+            });
+
+            document.querySelectorAll('.module-remove-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const moduleId = parseInt(e.target.dataset.id);
+                    modules = modules.filter(m => m.id !== moduleId);
+                    renderModules();
+                });
+            });
+        }
+        
+        addModuleForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = moduleNameInput.value.trim();
+            if (name) {
+                modules.push({ id: Date.now(), name: name, loc: 1000 });
+                moduleNameInput.value = '';
+                renderModules();
+            }
+        });
+
+        document.getElementById('use-total-loc-btn').addEventListener('click', () => {
+            const totalLOC = modules.reduce((sum, m) => sum + m.loc, 0);
+            
+            // Update COCOMO tab
+            document.getElementById('kloc').value = (totalLOC / 1000).toFixed(2);
+            
+            // Update LOC Estimation tab
+            const locSlider = document.getElementById('loc-slider');
+            locSlider.value = totalLOC;
+            // Manually trigger input event to update display
+            locSlider.dispatchEvent(new Event('input'));
+            
+            // Switch to COCOMO tab
+            document.querySelector('.tab-btn[data-tab="cocomo"]').click();
+            
+            // Recalculate all
+            updateCocomoCalculation();
+            updateLOCCalculation();
+        });
+
+        // --- INITIALIZATION & EVENT LISTENERS ---
+        window.onload = () => {
+            // Create COCOMO sliders
+            for (const id in costDrivers) {
+                const driver = costDrivers[id];
+                const sliderGroup = document.createElement('div');
+                sliderGroup.className = 'slider-group';
+                const maxIndex = driver.values.length - 1;
+                sliderGroup.innerHTML = `
+                    <div class="slider-label">
+                        <span>${driver.label}</span>
+                        <span class="rating-text" id="${id}-text">${driver.texts[driver.default]}</span>
+                    </div>
+                    <input type="range" id="${id}" class="realtime-input slider-input" min="0" max="${maxIndex}" value="${driver.default}" step="1">
+                `;
+                slidersContainer.appendChild(sliderGroup);
+            }
+            
+            // Add listeners for COCOMO inputs
+            document.querySelectorAll('.realtime-input').forEach(input => {
+                input.addEventListener('input', updateCocomoCalculation);
+            });
+
+            // Add listeners for LOC inputs
+            document.querySelectorAll('.loc-input').forEach(input => {
+                input.addEventListener('input', updateLOCCalculation);
+            });
+
+            // Tab switching logic
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.getElementById(btn.dataset.tab).classList.add('active');
+                });
+            });
+
+            // Load Case Study button logic
+            document.getElementById('load-case-study-btn').addEventListener('click', () => {
+                document.getElementById('model-intermediate').checked = true;
+                document.getElementById('kloc').value = 10;
+                document.getElementById('mode').value = 'semi-detached';
+                document.getElementById('rely').value = 2;
+                document.getElementById('data').value = 1;
+                document.getElementById('cplx').value = 3;
+                document.getElementById('time').value = 0;
+                document.getElementById('stor').value = 0;
+                document.getElementById('virt').value = 1;
+                document.getElementById('turn').value = 0;
+                document.getElementById('acap').value = 2;
+                document.getElementById('aexp').value = 1;
+                document.getElementById('pcap').value = 2;
+                document.getElementById('vexp').value = 1;
+                document.getElementById('lexp').value = 2;
+                document.getElementById('modp').value = 3;
+                document.getElementById('tool').value = 3;
+                document.getElementById('sced').value = 2;
+                document.querySelector('.tab-btn[data-tab="cocomo"]').click();
+                updateCocomoCalculation();
+            });
+
+            // Initial calculations
+            updateCocomoCalculation();
+            updateLOCCalculation();
+            renderModules();
+        };
+    </script>
+</body>
+</html>
